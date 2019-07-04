@@ -8,7 +8,7 @@
 #  You can download at BlendSwap.com. Google with 'Sintel Lite BlendSwap')
 #########################################################################
 # RigifyToUnreal : ver 1.61
-# Environment : Blender 2.75a, UnrealEditor 4.9.1
+# Environment : Blender 2.8, UnrealEditor 4.22
 # Author : ChichigeBobo
 #########################################################################
 # What this script does -------
@@ -71,8 +71,8 @@
 
 #==========  CUSTOMIZATION  ===========================================
 #Change to your favorite name.
-newRigName = 'Unrigify'
-newActionNamePrefix = 'Unrigify_'
+newRigName = 'Armature'
+newActionNamePrefix = 'Armature_'
 newActionNameSuffix = ''
 
 #use below if you have bones added.
@@ -121,10 +121,10 @@ def main():
     initialSelection = bpy.context.selected_objects        
     for obj in initialSelection:
         if obj.type == 'ARMATURE':
-            bpy.context.scene.objects.active = obj
+            bpy.context.view_layer.objects.active = obj
             rigifyObj = obj
         else:
-            obj.select = False
+            obj.select_set(state=False)
 
     isPitchiPoy = len(rigifyObj.data.bones) > 620 
     boneNames = getPitchiPoyBoneNames() if isPitchiPoy else getBoneNames()
@@ -222,11 +222,11 @@ def main():
     #-------- size manipulation --------             
     empty = bpy.data.objects.new('Empty', None)
     empty.location = newRigObj.location
-    bpy.context.scene.objects.link(empty)
+    bpy.context.collection.objects.link(empty)
     newRigObj.scale = (100, 100, 100)
     newRigObj.parent = empty
     empty.scale = (0.01, 0.01, 0.01)
-    newRigObj.select = True
+    newRigObj.select_set(state=True)
     
     bpy.ops.object.transform_apply(location=False, rotation=False, scale=True)
     
@@ -257,16 +257,16 @@ def main():
     #----- point armature modifier to new rig ----
     for obj in initialSelection:
         if obj.type == 'ARMATURE':
-            obj.select = False
+            obj.select_set(state=False)
         elif obj.type == 'MESH':
             for m in obj.modifiers:
                 if m.type == 'ARMATURE' and m.object == rigifyObj:
                     m.object = newRigObj
-            obj.select = True
+            obj.select_set(state=True)
         else:
-            obj.select = False     
+            obj.select_set(state=False)     
     
-    bpy.context.scene.objects.active = newRigObj
+    bpy.context.view_layer.objects.active = newRigObj
 
     print('RigifyToUnreal : Done!')
     
